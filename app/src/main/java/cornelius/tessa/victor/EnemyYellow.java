@@ -8,10 +8,10 @@ import android.graphics.Rect;
 public class EnemyYellow extends Enemy
 {
     final static Rect enemy = new Rect(150,90,171,104);
-    final static int value = 1000;
     public EnemyYellow(MyWorld theWorld)
     {
         super(theWorld);
+        this.value = 1000;
     }
 
     @Override

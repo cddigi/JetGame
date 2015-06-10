@@ -36,7 +36,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
     protected Context context;
     public static int numKills = 0;
     final int HIGH_SCORE_MAX = 5;
-    final int MAX_SHOTS = 5;
+    final int MAX_SHOTS_ONSCREEN = 5;
     final MyWorld world = this;
 
     // Motion Variables
@@ -50,7 +50,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
     SharedPreferences sharedPref;
     SharedPreferences.Editor editor;
 
-    public MyWorld(StateListener listener, SoundManager sounds, Context context)
+    public MyWorld(final StateListener listener, SoundManager sounds, Context context)
     {
         super(listener, sounds);
         this.context = context;
@@ -66,7 +66,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
         mediaPlayer.start(); // no need to call prepare() here because create() does that for you
 
         // Enivronment initialization
-        stage = 0;
+        stage = 1;
         ship = new MyShip(this);
         ship.position.X = 128;
         ship.position.Y += 765 / 2;
@@ -82,7 +82,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
             public void run()
             {
                 ArrayList<Enemy> enemies = new ArrayList<>();
-                while(true)
+                while(!ship.isDead())
                 {
                     if (stage == 1)
                     {
@@ -117,7 +117,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         for (Enemy e : enemies)
                             synchronized (e)
                             {
-                                e.kill();
+                                e.kill();   //kill the remaining enemies onscreen
                             }
                         enemies.clear();
                         synchronized (this)
@@ -164,7 +164,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                                 e.baseVelocity = vel;
                                 e.speed = 300;
                                 e.updateVelocity();
-                                if(enemyShots <= MAX_SHOTS)
+                                if(enemyShots <= MAX_SHOTS_ONSCREEN)
                                 {
                                     EnemyLaser enemyLaser = new EnemyLaser(world);
                                     enemyLaser.position.Y = e.position.Y;
@@ -177,7 +177,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         for (Enemy e : enemies)
                             synchronized (e)
                             {
-                                e.kill();
+                                e.kill();   //kill the remaining enemies onscreen
                             }
                         enemies.clear();
                         synchronized (this)
@@ -223,7 +223,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         for (Enemy e : enemies)
                             synchronized (e)
                             {
-                                e.kill();
+                                e.kill();   //kill the remaining enemies onscreen
                             }
                         enemies.clear();
                         synchronized (this)
@@ -232,6 +232,9 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         }
                     }
                 }
+                listener.onGameOver(true);
+                updateHighScores();
+                storeHighScores();
             }
         }).start();
     }
@@ -255,7 +258,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                 if(stage == 1)
                 {
                     // have to add object in switch case in order to avoid animation bug
-                    if(shots <= MAX_SHOTS)
+                    if(shots <= MAX_SHOTS_ONSCREEN)
                     {
                         this.addObject(shipLaser);
                         shipLaser.fireAtPos(touch);
@@ -283,7 +286,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                 if(stage == 2)
                 {
                     // have to add object in switch case in order to avoid animation bug
-                    if(shots <= MAX_SHOTS)
+                    if(shots <= MAX_SHOTS_ONSCREEN)
                     {
                         this.addObject(shipLaser);
                         shipLaser.fire(touch);
@@ -356,6 +359,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                 highScores.add(Integer.parseInt(highScoreStringArray[i].trim()));
         }
     }
+
     //Calculates the player's score
     public void calculateScore()
     {
@@ -363,6 +367,4 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
         score ++;
 
     }
-
-
 }

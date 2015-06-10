@@ -14,6 +14,7 @@ public abstract class Enemy extends GameSprite
     protected final static Point3F scale = Point3F.identity();
     protected MyWorld world;
     protected Context context;
+    public int value;
 
     public Enemy(MyWorld theWorld)
     {
@@ -45,6 +46,8 @@ public abstract class Enemy extends GameSprite
         }
         new Explosion(world, this);
         this.kill();
+        world.enemyKill++;
+        world.score += this.value;
     }
 
     @Override
