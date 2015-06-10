@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import cornelius.tessa.victor.MyWorld;
-import cornelius.tessa.victor.ShipLaser;
 import edu.noctrl.craig.generic.GameSprite;
 import edu.noctrl.craig.generic.SoundManager;
 import edu.noctrl.craig.generic.World;
@@ -41,6 +40,8 @@ public class JetGameView extends SurfaceView implements SurfaceHolder.Callback, 
 
     private int screenWidth;
     private int screenHeight;
+
+    private Context context;
 
     //http://stackoverflow.com/questions/18973550/load-images-from-assets-folder
     private Bitmap getBitmapFromAsset(String strName)
@@ -71,6 +72,7 @@ public class JetGameView extends SurfaceView implements SurfaceHolder.Callback, 
     // public constructor
     public JetGameView(Context context, AttributeSet attrs) {
         super(context, attrs); // call superclass constructor
+        this.context = context;
         activity = (Activity) context; // store reference to MainActivity
         // register SurfaceHolder.Callback listener
         getHolder().addCallback(this);
@@ -153,6 +155,43 @@ public class JetGameView extends SurfaceView implements SurfaceHolder.Callback, 
         ); // end call to runOnUiThread
     } // end method showGameOverDialog
 
+    // display an AlertDialog when the game ends
+    private void showScoreDialog(final String scoreMessage) {
+        final DialogFragment gameResult =
+                new DialogFragment() {
+                    // create an AlertDialog and return it
+                    @Override
+                    public Dialog onCreateDialog(Bundle bundle) {
+                        // create dialog displaying String resource for messageId
+                        AlertDialog.Builder builder =
+                                new AlertDialog.Builder(getActivity());
+                        //builder.setTitle(getResources().getString(messageId))
+                        builder.setMessage(scoreMessage);
+                        builder.setPositiveButton("Ok",
+                                new DialogInterface.OnClickListener() {
+                                    // called when "Reset Game" Button is pressed
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                } // end anonymous inner class
+                        ); // end call to setPositiveButton
+
+                        return builder.create(); // return the AlertDialog
+                    } // end method onCreateDialog
+                }; // end DialogFragment anonymous inner class
+
+        // in GUI thread, use FragmentManager to display the DialogFragment
+        activity.runOnUiThread(
+                new Runnable() {
+                    public void run() {
+                        dialogIsDisplayed = true;
+                        gameResult.setCancelable(false); // modal dialog
+                        gameResult.show(activity.getFragmentManager(), "results");
+                    }
+                } // end Runnable
+        ); // end call to runOnUiThread
+    } // end method showGameOverDialog
+
     // stops the game; called by JetGameFragment's onPause method
     public void stopGame() {
         if (gameThread != null)
@@ -202,5 +241,12 @@ public class JetGameView extends SurfaceView implements SurfaceHolder.Callback, 
         gameOver = true; // the game is over
         gameThread.stopGame(); // terminate thread
         showGameOverDialog(R.string.lose); // show the losing dialog
+
+        String scoreText = "Your score: " + world.score + "\n High Scores: \n\n";
+        for(int i = 0; i < world.highScores.size(); i++)
+            scoreText += Integer.toString(i + 1) + ": "
+                      + Integer.toString(world.highScores.get(i)).trim() + "\n";
+
+        showScoreDialog(scoreText);
     }
 }
