@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import cornelius.tessa.victor.MyWorld;
-import cornelius.tessa.victor.ShipLaser;
 import edu.noctrl.craig.generic.GameSprite;
 import edu.noctrl.craig.generic.SoundManager;
 import edu.noctrl.craig.generic.World;
@@ -35,6 +34,7 @@ public class JetGameView extends SurfaceView implements SurfaceHolder.Callback, 
     private SoundManager soundManager;
     private Activity activity; // to display Game Over dialog in GUI thread
     private boolean dialogIsDisplayed = false;
+    public static int startStage;
 
     // variables for the game loop and tracking statistics
     private boolean gameOver; // is the game over?
@@ -89,7 +89,8 @@ public class JetGameView extends SurfaceView implements SurfaceHolder.Callback, 
     } // end method onSizeChanged
 
     // reset all the screen elements and start a new game
-    public void newGame(SurfaceHolder holder) {
+    public void newGame(SurfaceHolder holder)
+    {
         if (gameOver) // starting a new game after the last game ended
         {
             gameOver = false;
@@ -104,7 +105,22 @@ public class JetGameView extends SurfaceView implements SurfaceHolder.Callback, 
         }
     } // end method newGame
 
-
+    // reset all the screen elements and start a new game
+    public void newGame(SurfaceHolder holder, int stage)
+    {
+        if (gameOver) // starting a new game after the last game ended
+        {
+            gameOver = false;
+            world = new MyWorld(this, soundManager, this.getContext(), stage);
+            world.updateSize(screenWidth, screenHeight);
+            this.setOnTouchListener(world);
+            gameThread = new GameThread(holder, world); // create thread
+            world.shotsFired = 0;
+            world.enemyKill = 0;
+            //world.score = 0;
+            gameThread.start(); // start the game loop thread
+        }
+    } // end method newGame
 
     // display an AlertDialog when the game ends
     private void showGameOverDialog(final int messageId) {

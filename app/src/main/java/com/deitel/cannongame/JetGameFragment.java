@@ -20,6 +20,7 @@ import cornelius.tessa.victor.MyWorld;
 public class JetGameFragment extends Fragment {
     private JetGameView jetGameView; // custom view to display the game
     private MyWorld myWorld;
+    public static int startStage;
     // called when Fragment's view needs to be created
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,6 +64,11 @@ public class JetGameFragment extends Fragment {
         menuInflater.inflate(R.menu.menu_main, menu);
     }
 
+    public static int getStage()
+    {
+        return startStage;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -79,8 +85,7 @@ public class JetGameFragment extends Fragment {
 
             case R.id.stage1:
                 jetGameView.stopGame();
-                jetGameView.newGame(jetGameView.getHolder());
-                myWorld.setStage(1);
+                jetGameView.newGame(jetGameView.getHolder(), 1);
                 return true;
 
             case R.id.stage2:
