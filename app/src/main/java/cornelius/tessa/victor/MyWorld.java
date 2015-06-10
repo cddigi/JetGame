@@ -274,6 +274,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         this.addObject(shipLaser);
                         shipLaser.fireAtPos(touch);
                         shots++;
+                        shotsFired++;
                     }
                 }
                 break;
@@ -302,6 +303,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         this.addObject(shipLaser);
                         shipLaser.fire(touch);
                         shots++;
+                        shotsFired++;
                     }
                 }
                 break;
