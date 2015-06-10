@@ -66,7 +66,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
         mediaPlayer.start(); // no need to call prepare() here because create() does that for you
 
         // Enivronment initialization
-        stage = 1;
+        stage = 0;
         ship = new MyShip(this);
         ship.position.X = 128;
         ship.position.Y += 765 / 2;
@@ -101,14 +101,14 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                             }
 
                             enemy.position.X = width * rand.nextFloat();
-                            while (enemy.position.X < 300)
+                            while (enemy.position.X < 500)
                                 enemy.position.X = width * rand.nextFloat();
                             enemy.position.Y = height * rand.nextFloat();
                             enemies.add((Enemy) enemy);
                             addObject(enemy);
                             try
                             {
-                                Thread.sleep(rand.nextInt(1700) + 300);
+                                Thread.sleep(rand.nextInt(1000) + 300);
                             } catch (InterruptedException e)
                             {
                                 e.printStackTrace();
@@ -142,7 +142,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                             }
 
                             enemy.position.X = width * rand.nextFloat();
-                            while (enemy.position.X < 300)
+                            while (enemy.position.X < 500)
                                 enemy.position.X = width * rand.nextFloat();
                             enemy.position.Y = height * rand.nextFloat();
                             enemies.add((Enemy) enemy);
@@ -180,11 +180,65 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                                 e.kill();
                             }
                         enemies.clear();
+                        synchronized (this)
+                        {
+                            numKills = 0;
+                        }
                         stage++;
-                    } else if (stage == 3) ;
+                    }
+                    else if (stage == 3)
+                    {
+                        while (!ship.isDead())
+                        {
+                            switch (rand.nextInt(3))
+                            {
+                                case 0:
+                                    enemy = new EnemyBlue(MyWorld.this);
+                                    break;
+                                case 1:
+                                    enemy = new EnemyBlack(MyWorld.this);
+                                    break;
+                                default:
+                                    enemy = new EnemyYellow(MyWorld.this);
+                            }
+
+                            enemy.position.X = width * rand.nextFloat();
+                            while (enemy.position.X < 500)
+                                enemy.position.X = width * rand.nextFloat();
+                            enemy.position.Y = height * rand.nextFloat();
+                            enemies.add((Enemy) enemy);
+                            addObject(enemy);
+                            Point3F vel = new Point3F(-1f, 0, 0);
+                            enemy.baseVelocity = vel;
+                            enemy.speed = 500;
+                            enemy.updateVelocity();
+                            try
+                            {
+                                Thread.sleep(rand.nextInt(1000) + 300);
+                            } catch (InterruptedException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                        for (Enemy e : enemies)
+                            synchronized (e)
+                            {
+                                e.kill();
+                            }
+                        enemies.clear();
+                        synchronized (this)
+                        {
+                            numKills = 0;
+                        }
+                    }
                 }
             }
         }).start();
+    }
+
+    public void setStage(int stage)
+    {
+        this.stage = stage;
     }
 
     @Override
@@ -211,7 +265,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                if(stage == 2)
+                if(stage == 2 || stage == 3)
                 {
                     // Find the index of the active pointer and fetch its position
                     final int pointerIndex = event.findPointerIndex(mActivePointerId);

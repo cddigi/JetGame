@@ -50,6 +50,6 @@ public abstract class Enemy extends GameSprite
     @Override
     public void collision(GameObject other)
     {
-
+        other.kill();
     }
 }

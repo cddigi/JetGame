@@ -3,12 +3,7 @@
 package com.deitel.cannongame;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
 
 import cornelius.tessa.victor.MyWorld;
 
@@ -22,57 +17,6 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main); // inflate the layout
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.ss
-        int id = item.getItemId();
-
-        switch (item.getItemId()) {
-            case R.id.highScores:
-                myWorld.retrieveHighScores();
-                return true;
-
-            case R.id.stage1:
-                myWorld.stage = 1;
-                return true;
-
-            case R.id.stage2:
-               myWorld.stage = 2;
-                return true;
-
-            case R.id.stage3:
-                myWorld.stage = 3;
-                return true;
-
-            case R.id.stageSelection:
-                return true;
-
-            case R.id.about:
-                about();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-    //Displays about message
-    public void about() {
-        new AlertDialog.Builder(this)
-                .setTitle("About")
-                .setMessage("This game was created by Cornelius, Tessa, & Victor. Homage to Brain Craig, for game engine")
-                .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .show();
-    }
 
 } // end class MainActivity
 
