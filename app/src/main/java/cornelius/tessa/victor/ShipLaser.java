@@ -74,7 +74,11 @@ public class ShipLaser extends GameSprite
     public void collision(GameObject other)
     {
         other.kill();
-        world.numKills++;
+        if(other.obj_type == Type.ENEMY)
+        {
+            world.numKills++;
+            world.enemyKill++;
+        }
 //        synchronized (other)
 //        {
 //            if (other != null && other.obj_type == Type.ENEMY)

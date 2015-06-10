@@ -48,7 +48,7 @@ public class MyShip extends GameSprite {
     @Override
     public void cull()
     {
-
+        this.die();
     }
 
     @Override

@@ -6,8 +6,6 @@ import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.deitel.cannongame.R;
-
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -24,9 +22,9 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
 {
     private GameSprite enemy;
     private Random rand = new Random();
-    public int stage;
+    public static int stage;
     public int score;
-    public int enemyKill;
+    public static int enemyKill;
     public int enemyHit;
     public int shotsFired;
     private ArrayList<Integer> highScores;
@@ -61,9 +59,9 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
         enemyShots = 0;
 
         // Sound initialization
-        MediaPlayer mediaPlayer = MediaPlayer.create(this.context, R.raw.game_music);
-        mediaPlayer.setOnCompletionListener(this);
-        mediaPlayer.start(); // no need to call prepare() here because create() does that for you
+        //MediaPlayer mediaPlayer = MediaPlayer.create(this.context, R.raw.game_music);
+        //mediaPlayer.setOnCompletionListener(this);
+        //mediaPlayer.start(); // no need to call prepare() here because create() does that for you
 
         // Enivronment initialization
         stage = 1;
@@ -82,164 +80,166 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
             public void run()
             {
                 ArrayList<Enemy> enemies = new ArrayList<>();
-                while(!ship.isDead())
+                synchronized (ship)
                 {
-                    if (stage == 1)
+                    while (!ship.isDead())
                     {
-                        while (numKills <= 10)
+                        if (stage == 1)
                         {
-                            switch (rand.nextInt(3))
+                            while (numKills <= 10)
                             {
-                                case 0:
-                                    enemy = new EnemyBlue(MyWorld.this);
-                                    break;
-                                case 1:
-                                    enemy = new EnemyBlack(MyWorld.this);
-                                    break;
-                                default:
-                                    enemy = new EnemyYellow(MyWorld.this);
-                            }
-
-                            enemy.position.X = width * rand.nextFloat();
-                            while (enemy.position.X < 500)
-                                enemy.position.X = width * rand.nextFloat();
-                            enemy.position.Y = height * rand.nextFloat();
-                            enemies.add((Enemy) enemy);
-                            addObject(enemy);
-                            try
-                            {
-                                Thread.sleep(rand.nextInt(1000) + 300);
-                            } catch (InterruptedException e)
-                            {
-                                e.printStackTrace();
-                            }
-                        }
-                        for (Enemy e : enemies)
-                            synchronized (e)
-                            {
-                                e.kill();   //kill the remaining enemies onscreen
-                            }
-                        enemies.clear();
-                        synchronized (this)
-                        {
-                            numKills = 0;
-                        }
-                        stage++;
-                    } else if (stage == 2)
-                    {
-                        while (numKills <= 10)
-                        {
-                            switch (rand.nextInt(3))
-                            {
-                                case 0:
-                                    enemy = new EnemyBlue(MyWorld.this);
-                                    break;
-                                case 1:
-                                    enemy = new EnemyBlack(MyWorld.this);
-                                    break;
-                                default:
-                                    enemy = new EnemyYellow(MyWorld.this);
-                            }
-
-                            enemy.position.X = width * rand.nextFloat();
-                            while (enemy.position.X < 500)
-                                enemy.position.X = width * rand.nextFloat();
-                            enemy.position.Y = height * rand.nextFloat();
-                            enemies.add((Enemy) enemy);
-                            addObject(enemy);
-                            try
-                            {
-                                Thread.sleep(rand.nextInt(1700) + 300);
-                            } catch (InterruptedException e)
-                            {
-                                e.printStackTrace();
-                            }
-                            for (Enemy e : enemies)
-                            {
-                                float x = rand.nextFloat();
-                                float y = rand.nextFloat();
-                                if(rand.nextBoolean()) x*=-1;
-                                if(rand.nextBoolean()) y*=-1;
-                                Point3F vel = new Point3F(x, y, 0);
-                                e.baseVelocity = vel;
-                                e.speed = 300;
-                                e.updateVelocity();
-                                if(enemyShots <= MAX_SHOTS_ONSCREEN)
+                                switch (rand.nextInt(3))
                                 {
-                                    EnemyLaser enemyLaser = new EnemyLaser(world);
-                                    enemyLaser.position.Y = e.position.Y;
-                                    enemyLaser.position.X = e.position.X;
-                                    addObject(enemyLaser);
-                                    enemyLaser.fire();
+                                    case 0:
+                                        enemy = new EnemyBlue(MyWorld.this);
+                                        break;
+                                    case 1:
+                                        enemy = new EnemyBlack(MyWorld.this);
+                                        break;
+                                    default:
+                                        enemy = new EnemyYellow(MyWorld.this);
+                                }
+
+                                enemy.position.X = width * rand.nextFloat();
+                                while (enemy.position.X < 500)
+                                    enemy.position.X = width * rand.nextFloat();
+                                enemy.position.Y = height * rand.nextFloat();
+                                enemies.add((Enemy) enemy);
+                                addObject(enemy);
+                                try
+                                {
+                                    Thread.sleep(rand.nextInt(1000) + 300);
+                                } catch (InterruptedException e)
+                                {
+                                    e.printStackTrace();
                                 }
                             }
-                        }
-                        for (Enemy e : enemies)
-                            synchronized (e)
+                            for (Enemy e : enemies)
+                                synchronized (e)
+                                {
+                                    e.kill();   //kill the remaining enemies onscreen
+                                }
+                            enemies.clear();
+                            synchronized (this)
                             {
-                                e.kill();   //kill the remaining enemies onscreen
+                                numKills = 0;
                             }
-                        enemies.clear();
-                        synchronized (this)
+                            stage++;
+                        } else if (stage == 2)
                         {
-                            numKills = 0;
-                        }
-                        stage++;
-                    }
-                    else if (stage == 3)
-                    {
-                        double startTime = totalElapsedTime;
-                        while (!ship.isDead())
-                        {
-                            switch (rand.nextInt(3))
+                            while (numKills <= 10)
                             {
-                                case 0:
-                                    enemy = new EnemyBlue(MyWorld.this);
-                                    break;
-                                case 1:
-                                    enemy = new EnemyBlack(MyWorld.this);
-                                    break;
-                                default:
-                                    enemy = new EnemyYellow(MyWorld.this);
-                            }
+                                switch (rand.nextInt(3))
+                                {
+                                    case 0:
+                                        enemy = new EnemyBlue(MyWorld.this);
+                                        break;
+                                    case 1:
+                                        enemy = new EnemyBlack(MyWorld.this);
+                                        break;
+                                    default:
+                                        enemy = new EnemyYellow(MyWorld.this);
+                                }
 
-                            enemy.position.X = width * rand.nextFloat();
-                            while (enemy.position.X < 500)
                                 enemy.position.X = width * rand.nextFloat();
-                            enemy.position.Y = height * rand.nextFloat();
-                            enemies.add((Enemy) enemy);
-                            addObject(enemy);
-                            Point3F vel = new Point3F(-1f, 0, 0);
-                            enemy.baseVelocity = vel;
-                            enemy.speed = 500;
-                            enemy.updateVelocity();
-                            try
-                            {
-                                Thread.sleep(rand.nextInt(1000) + 300);
-                            } catch (InterruptedException e)
-                            {
-                                e.printStackTrace();
+                                while (enemy.position.X < 500)
+                                    enemy.position.X = width * rand.nextFloat();
+                                enemy.position.Y = height * rand.nextFloat();
+                                enemies.add((Enemy) enemy);
+                                addObject(enemy);
+                                try
+                                {
+                                    Thread.sleep(rand.nextInt(1700) + 300);
+                                } catch (InterruptedException e)
+                                {
+                                    e.printStackTrace();
+                                }
+                                for (Enemy e : enemies)
+                                {
+                                    float x = rand.nextFloat();
+                                    float y = rand.nextFloat();
+                                    if (rand.nextBoolean()) x *= -1;
+                                    if (rand.nextBoolean()) y *= -1;
+                                    Point3F vel = new Point3F(x, y, 0);
+                                    e.baseVelocity = vel;
+                                    e.speed = 300;
+                                    e.updateVelocity();
+                                    if (enemyShots <= MAX_SHOTS_ONSCREEN)
+                                    {
+                                        EnemyLaser enemyLaser = new EnemyLaser(world);
+                                        enemyLaser.position.Y = e.position.Y;
+                                        enemyLaser.position.X = e.position.X;
+                                        addObject(enemyLaser);
+                                        enemyLaser.fire();
+                                    }
+                                }
                             }
-                        }
-                        // +10 points for every second you survived
-                        double endTime = totalElapsedTime;
-                        score += (startTime - endTime) / 100;
-
-                        for (Enemy e : enemies)
-                            synchronized (e)
+                            for (Enemy e : enemies)
+                                synchronized (e)
+                                {
+                                    e.kill();   //kill the remaining enemies onscreen
+                                }
+                            enemies.clear();
+                            synchronized (this)
                             {
-                                e.kill();   //kill the remaining enemies onscreen
+                                numKills = 0;
                             }
-                        enemies.clear();
-                        synchronized (this)
+                            stage++;
+                        } else if (stage == 3)
                         {
-                            numKills = 0;
+                            double startTime = totalElapsedTime;
+                            while (!ship.isDead())
+                            {
+                                switch (rand.nextInt(3))
+                                {
+                                    case 0:
+                                        enemy = new EnemyBlue(MyWorld.this);
+                                        break;
+                                    case 1:
+                                        enemy = new EnemyBlack(MyWorld.this);
+                                        break;
+                                    default:
+                                        enemy = new EnemyYellow(MyWorld.this);
+                                }
+
+                                enemy.position.X = width * rand.nextFloat();
+                                while (enemy.position.X < 500)
+                                    enemy.position.X = width * rand.nextFloat();
+                                enemy.position.Y = height * rand.nextFloat();
+                                enemies.add((Enemy) enemy);
+                                addObject(enemy);
+                                Point3F vel = new Point3F(-1f, 0, 0);
+                                enemy.baseVelocity = vel;
+                                enemy.speed = 500;
+                                enemy.updateVelocity();
+                                try
+                                {
+                                    Thread.sleep(rand.nextInt(1000) + 300);
+                                } catch (InterruptedException e)
+                                {
+                                    e.printStackTrace();
+                                }
+                            }
+                            // +10 points for every second you survived
+                            double endTime = totalElapsedTime;
+                            score += (startTime - endTime) / 100;
+
+                            for (Enemy e : enemies)
+                                synchronized (e)
+                                {
+                                    e.kill();   //kill the remaining enemies onscreen
+                                }
+                            enemies.clear();
+                            synchronized (this)
+                            {
+                                numKills = 0;
+                            }
                         }
                     }
+                    listener.onGameOver(true);
+                    updateHighScores();
+                    storeHighScores();
                 }
-                listener.onGameOver(true);
-                updateHighScores();
-                storeHighScores();
             }
         }).start();
     }

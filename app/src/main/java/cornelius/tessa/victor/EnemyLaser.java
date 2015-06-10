@@ -63,15 +63,9 @@ public class EnemyLaser extends GameSprite {
     @Override
     public void collision(GameObject other)
     {
-        other.kill();
-//        MyShip ship = (MyShip) other;
-//        synchronized (ship)
-//        {
-//            if(ship != null && ship.obj_type == Type.PLAYER)
-//            {
-//                ship.die();
-//                ship.kill();
-//            }
-//        }
+        if(other != null && other.obj_type == Type.PLAYER)
+        {
+            other.kill();
+        }
     }
 }
