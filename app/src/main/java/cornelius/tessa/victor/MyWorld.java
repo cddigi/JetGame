@@ -36,6 +36,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
     final int HIGH_SCORE_MAX = 5;
     final int MAX_SHOTS_ONSCREEN = 5;
     final MyWorld world = this;
+    public static double added_time;
 
     // Motion Variables
     // The ‘active pointer’ is the one currently moving our object.
@@ -57,6 +58,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
         highScores = new ArrayList<>();
         shots = 0;
         enemyShots = 0;
+        added_time = 0;
 
         // Sound initialization
         //MediaPlayer mediaPlayer = MediaPlayer.create(this.context, R.raw.game_music);
@@ -82,11 +84,12 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                 ArrayList<Enemy> enemies = new ArrayList<>();
                 synchronized (ship)
                 {
-                    while (!ship.isDead())
+                    double end_time = totalElapsedTime + 5;
+                    while (!ship.isDead() && stage != 4)
                     {
                         if (stage == 1)
                         {
-                            while (numKills <= 10)
+                            while (numKills < 10 && (end_time + added_time) > totalElapsedTime)
                             {
                                 switch (rand.nextInt(3))
                                 {
@@ -124,7 +127,10 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                             {
                                 numKills = 0;
                             }
-                            stage = 2;
+                            if((end_time + added_time) < totalElapsedTime)
+                                stage = 4;
+                            else
+                                stage = 2;
                         } else if (stage == 2)
                         {
                             while (numKills <= 10 && !ship.isDead())

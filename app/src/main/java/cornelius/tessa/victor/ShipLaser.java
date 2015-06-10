@@ -76,6 +76,7 @@ public class ShipLaser extends GameSprite
         other.kill();
         if(other.obj_type == Type.ENEMY)
         {
+            world.added_time += 1;
             world.numKills++;
             world.enemyKill++;
         }
