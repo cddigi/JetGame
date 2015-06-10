@@ -233,6 +233,8 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                     }
                 }
                 listener.onGameOver(true);
+                updateHighScores();
+                storeHighScores();
             }
         }).start();
     }
