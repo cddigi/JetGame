@@ -124,10 +124,10 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                             {
                                 numKills = 0;
                             }
-                            stage++;
+                            stage = 2;
                         } else if (stage == 2)
                         {
-                            while (numKills <= 10)
+                            while (numKills <= 10 && !ship.isDead())
                             {
                                 switch (rand.nextInt(3))
                                 {
@@ -184,7 +184,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                             {
                                 numKills = 0;
                             }
-                            stage++;
+                            stage = 3;
                         } else if (stage == 3)
                         {
                             double startTime = totalElapsedTime;
