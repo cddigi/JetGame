@@ -13,7 +13,7 @@ public class ShipLaser extends GameSprite
 {
     protected static final Rect source = new Rect(256, 69, 272, 76);
     protected static final Point3F scale = Point3F.identity();
-    MyWorld myWorld;
+    protected MyWorld world;
 
     public ShipLaser(MyWorld theWorld)
     {
@@ -74,6 +74,7 @@ public class ShipLaser extends GameSprite
     public void collision(GameObject other)
     {
         other.kill();
+        world.numKills++;
 //        synchronized (other)
 //        {
 //            if (other != null && other.obj_type == Type.ENEMY)
