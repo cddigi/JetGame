@@ -45,6 +45,7 @@ public abstract class Enemy extends GameSprite
 //            world.numKills++;
 //        }
         new Explosion(world, this);
+        world.soundManager.playSound(2);
         this.kill();
 //        world.enemyKill++;
         world.score += this.value;
