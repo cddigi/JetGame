@@ -29,7 +29,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
     public static int enemyKill;
     public int enemyHit;
     public int shotsFired;
-    private ArrayList<Integer> highScores;
+    public ArrayList<Integer> highScores;
     public static int shots;
     public static int enemyShots;
     protected MyShip ship;
@@ -244,9 +244,10 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                             }
                         }
                     }
-                    listener.onGameOver(true);
                     updateHighScores();
                     storeHighScores();
+                    listener.onGameOver(true);
+
                 }
             }
         }).start();
