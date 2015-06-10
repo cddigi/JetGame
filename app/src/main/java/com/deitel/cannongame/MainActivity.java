@@ -4,7 +4,6 @@ package com.deitel.cannongame;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.StrictMode;
 
 import cornelius.tessa.victor.MyWorld;
 
@@ -16,8 +15,6 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState); // call super's onCreate method
         setContentView(R.layout.activity_main); // inflate the layout
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
     }
 
 

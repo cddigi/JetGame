@@ -2,9 +2,6 @@ package cornelius.tessa.victor;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -22,7 +19,7 @@ import edu.noctrl.craig.generic.World;
  * Created by Cornelius on 5/21/2015.
  */
 
-public class MyWorld extends World implements MediaPlayer.OnCompletionListener, SensorEventListener
+public class MyWorld extends World implements MediaPlayer.OnCompletionListener
 {
     private GameSprite enemy;
     private Random rand = new Random();
@@ -61,7 +58,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener, 
         highScores = new ArrayList<>();
         shots = 0;
         enemyShots = 0;
-        stage = 3;
+        stage = 0;
 
         // Sound initialization
         //MediaPlayer mediaPlayer = MediaPlayer.create(this.context, R.raw.game_music);
@@ -295,7 +292,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener, 
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                if(stage == 2)
+                if(stage == 2 || stage == 3)
                 {
                     // Find the index of the active pointer and fetch its position
                     final int pointerIndex = event.findPointerIndex(mActivePointerId);
@@ -323,23 +320,6 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener, 
                 break;
         }
         return true;
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event)
-    {
-        if(stage == 3)
-        {
-            Point3F dir = new Point3F(-event.values[1], -event.values[0], 0);
-            ship.baseVelocity = dir;
-            ship.updateVelocity();
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy)
-    {
-
     }
 
     @Override
