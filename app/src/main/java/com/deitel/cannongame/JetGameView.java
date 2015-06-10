@@ -11,6 +11,8 @@ import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -28,9 +30,9 @@ import edu.noctrl.craig.generic.World;
 public class JetGameView extends SurfaceView implements SurfaceHolder.Callback, World.StateListener {
     private static final String TAG = "GameView"; // for logging errors
     private static final String SPRITE_FILE = "sprites.png";
-
+    public SensorManager sensorManager;
     private GameThread gameThread; // controls the game loop
-    private MyWorld world;
+    public MyWorld world;
     private SoundManager soundManager;
     private Activity activity; // to display Game Over dialog in GUI thread
     private boolean dialogIsDisplayed = false;
@@ -72,6 +74,7 @@ public class JetGameView extends SurfaceView implements SurfaceHolder.Callback, 
     public JetGameView(Context context, AttributeSet attrs) {
         super(context, attrs); // call superclass constructor
         activity = (Activity) context; // store reference to MainActivity
+        sensorManager = (SensorManager) activity.getSystemService(Activity.SENSOR_SERVICE);
         // register SurfaceHolder.Callback listener
         getHolder().addCallback(this);
         soundManager = new SoundManager(context);
@@ -114,6 +117,7 @@ public class JetGameView extends SurfaceView implements SurfaceHolder.Callback, 
             world = new MyWorld(this, soundManager, this.getContext(), stage);
             world.updateSize(screenWidth, screenHeight);
             this.setOnTouchListener(world);
+            sensorManager.registerListener(world, sensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_FASTEST);
             gameThread = new GameThread(holder, world); // create thread
             world.shotsFired = 0;
             world.enemyKill = 0;
