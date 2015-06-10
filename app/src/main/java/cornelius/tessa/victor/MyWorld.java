@@ -66,7 +66,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
         mediaPlayer.start(); // no need to call prepare() here because create() does that for you
 
         // Enivronment initialization
-        stage = 0;
+        stage = 1;
         ship = new MyShip(this);
         ship.position.X = 128;
         ship.position.Y += 765 / 2;
@@ -82,11 +82,11 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
             public void run()
             {
                 ArrayList<Enemy> enemies = new ArrayList<>();
-                while(true)
+                while(!ship.isDead())
                 {
                     if (stage == 1)
                     {
-                        while (numKills <= 10)
+                        while (numKills < 10)
                         {
                             switch (rand.nextInt(3))
                             {
@@ -124,7 +124,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         {
                             numKills = 0;
                         }
-                        stage++;
+                        stage = 2;
                     } else if (stage == 2)
                     {
                         while (numKills <= 10)
@@ -184,7 +184,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         {
                             numKills = 0;
                         }
-                        stage++;
+                        stage = 3;
                     }
                     else if (stage == 3)
                     {
@@ -232,6 +232,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         }
                     }
                 }
+                world.listener.onGameOver(true);
             }
         }).start();
     }
