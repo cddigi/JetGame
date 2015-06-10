@@ -6,6 +6,8 @@ import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.deitel.cannongame.R;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -61,9 +63,9 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
         added_time = 0;
 
         // Sound initialization
-        //MediaPlayer mediaPlayer = MediaPlayer.create(this.context, R.raw.game_music);
-        //mediaPlayer.setOnCompletionListener(this);
-        //mediaPlayer.start(); // no need to call prepare() here because create() does that for you
+        MediaPlayer mediaPlayer = MediaPlayer.create(this.context, R.raw.game_music);
+        mediaPlayer.setOnCompletionListener(this);
+        mediaPlayer.start(); // no need to call prepare() here because create() does that for you
 
         // Enivronment initialization
         stage = 1;
@@ -274,6 +276,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         this.addObject(shipLaser);
                         shipLaser.fireAtPos(touch);
                         shots++;
+                        shotsFired++;
                     }
                 }
                 break;
@@ -302,6 +305,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         this.addObject(shipLaser);
                         shipLaser.fire(touch);
                         shots++;
+                        shotsFired++;
                     }
                 }
                 break;
