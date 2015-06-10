@@ -50,7 +50,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
     SharedPreferences sharedPref;
     SharedPreferences.Editor editor;
 
-    public MyWorld(StateListener listener, SoundManager sounds, Context context)
+    public MyWorld(final StateListener listener, SoundManager sounds, Context context)
     {
         super(listener, sounds);
         this.context = context;
@@ -66,7 +66,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
         mediaPlayer.start(); // no need to call prepare() here because create() does that for you
 
         // Enivronment initialization
-        stage = 0;
+        stage = 1;
         ship = new MyShip(this);
         ship.position.X = 128;
         ship.position.Y += 765 / 2;
@@ -82,7 +82,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
             public void run()
             {
                 ArrayList<Enemy> enemies = new ArrayList<>();
-                while(true)
+                while(!ship.isDead())
                 {
                     if (stage == 1)
                     {
@@ -117,7 +117,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         for (Enemy e : enemies)
                             synchronized (e)
                             {
-                                e.kill();
+                                e.kill();   //kill the remaining enemies onscreen
                             }
                         enemies.clear();
                         synchronized (this)
@@ -177,7 +177,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         for (Enemy e : enemies)
                             synchronized (e)
                             {
-                                e.kill();
+                                e.kill();   //kill the remaining enemies onscreen
                             }
                         enemies.clear();
                         synchronized (this)
@@ -223,7 +223,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         for (Enemy e : enemies)
                             synchronized (e)
                             {
-                                e.kill();
+                                e.kill();   //kill the remaining enemies onscreen
                             }
                         enemies.clear();
                         synchronized (this)
@@ -232,6 +232,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         }
                     }
                 }
+                listener.onGameOver(true);
             }
         }).start();
     }
@@ -356,6 +357,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                 highScores.add(Integer.parseInt(highScoreStringArray[i].trim()));
         }
     }
+
     //Calculates the player's score
     public void calculateScore()
     {
@@ -363,6 +365,4 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
         score ++;
 
     }
-
-
 }

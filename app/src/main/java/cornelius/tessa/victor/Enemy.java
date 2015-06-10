@@ -46,6 +46,8 @@ public abstract class Enemy extends GameSprite
         }
         new Explosion(world, this);
         this.kill();
+        world.enemyKill++;
+        world.score += this.value;
     }
 
     @Override
