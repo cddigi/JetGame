@@ -3,6 +3,7 @@ package cornelius.tessa.victor;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -20,7 +21,7 @@ import edu.noctrl.craig.generic.World;
  * Created by Cornelius on 5/21/2015.
  */
 
-public class MyWorld extends World implements MediaPlayer.OnCompletionListener
+public class MyWorld extends World implements MediaPlayer.OnCompletionListener, SoundPool.OnLoadCompleteListener
 {
     private GameSprite enemy;
     private Random rand = new Random();
@@ -39,6 +40,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
     final int MAX_SHOTS_ONSCREEN = 5;
     final MyWorld world = this;
     public static double added_time;
+    public SoundManager soundManager;
 
     // Motion Variables
     // The ‘active pointer’ is the one currently moving our object.
@@ -55,6 +57,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
     {
         super(listener, sounds);
         this.context = context;
+        this.soundManager = new SoundManager(context);
         sharedPref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         editor = sharedPref.edit();
         highScores = new ArrayList<>();
@@ -179,6 +182,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                                         enemyLaser.position.X = e.position.X;
                                         addObject(enemyLaser);
                                         enemyLaser.fire();
+                                        soundManager.playSound(0);
                                     }
                                 }
                             }
@@ -276,6 +280,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                     {
                         this.addObject(shipLaser);
                         shipLaser.fireAtPos(touch);
+                        soundManager.playSound(0);
                         shots++;
                         shotsFired++;
                     }
@@ -382,5 +387,10 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
         enemyKill ++;
         score ++;
 
+    }
+
+    @Override
+    public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+        soundManager.playSound(0);
     }
 }

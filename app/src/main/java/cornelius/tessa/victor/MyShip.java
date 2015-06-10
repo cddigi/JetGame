@@ -42,7 +42,10 @@ public class MyShip extends GameSprite {
     public void die()
     {
         if(!this.isDead())
+        {
             new Explosion(world, this);
+            world.soundManager.playSound(1);
+        }
     }
 
     @Override
