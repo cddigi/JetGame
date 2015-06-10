@@ -14,6 +14,7 @@ public abstract class Enemy extends GameSprite
     protected final static Point3F scale = Point3F.identity();
     protected MyWorld world;
     protected Context context;
+    public int value;
 
     public Enemy(MyWorld theWorld)
     {
