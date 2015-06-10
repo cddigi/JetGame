@@ -188,6 +188,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                     }
                     else if (stage == 3)
                     {
+                        double startTime = totalElapsedTime;
                         while (!ship.isDead())
                         {
                             switch (rand.nextInt(3))
@@ -220,6 +221,10 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                                 e.printStackTrace();
                             }
                         }
+                        // +10 points for every second you survived
+                        double endTime = totalElapsedTime;
+                        score += (startTime - endTime) / 100;
+
                         for (Enemy e : enemies)
                             synchronized (e)
                             {
