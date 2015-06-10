@@ -40,12 +40,9 @@ public abstract class Enemy extends GameSprite
     @Override
     public void cull()
     {
-        synchronized (world)
-        {
-            world.numKills++;
-        }
         new Explosion(world, this);
         this.kill();
+        world.score += this.value;
     }
 
     @Override

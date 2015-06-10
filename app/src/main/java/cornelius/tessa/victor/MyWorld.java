@@ -24,9 +24,9 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
 {
     private GameSprite enemy;
     private Random rand = new Random();
-    public int stage;
-    public int score;
-    public int enemyKill;
+    public static int stage;
+    public static int score;
+    public static int enemyKill;
     public int enemyHit;
     public int shotsFired;
     private ArrayList<Integer> highScores;
@@ -117,17 +117,15 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         for (Enemy e : enemies)
                             synchronized (e)
                             {
-                                e.kill();
+                                e.kill();   //kill the remaining enemies onscreen
                             }
                         enemies.clear();
-                        synchronized (this)
-                        {
-                            numKills = 0;
-                        }
+                        numKills = 0;
                         stage = 2;
-                    } else if (stage == 2)
+                    }
+                    if (stage == 2)
                     {
-                        while (numKills <= 10)
+                        while (numKills < 10)
                         {
                             switch (rand.nextInt(3))
                             {
@@ -177,16 +175,14 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         for (Enemy e : enemies)
                             synchronized (e)
                             {
-                                e.kill();
+                                e.kill();   //kill the remaining enemies onscreen
                             }
                         enemies.clear();
-                        synchronized (this)
-                        {
-                            numKills = 0;
-                        }
+                        numKills = 0;
+
                         stage = 3;
                     }
-                    else if (stage == 3)
+                    if (stage == 3)
                     {
                         while (!ship.isDead())
                         {
@@ -223,7 +219,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                         for (Enemy e : enemies)
                             synchronized (e)
                             {
-                                e.kill();
+                                e.kill();   //kill the remaining enemies onscreen
                             }
                         enemies.clear();
                         synchronized (this)
@@ -357,6 +353,7 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
                 highScores.add(Integer.parseInt(highScoreStringArray[i].trim()));
         }
     }
+
     //Calculates the player's score
     public void calculateScore()
     {
@@ -364,6 +361,4 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
         score ++;
 
     }
-
-
 }
