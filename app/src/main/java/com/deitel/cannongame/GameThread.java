@@ -3,7 +3,7 @@ package com.deitel.cannongame;
 import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
-import cornelius.tessa.victor.MyWorld;
+import edu.noctrl.craig.generic.World;
 
 /**
  * Created by craig_000 on 5/9/2015.
@@ -11,10 +11,10 @@ import cornelius.tessa.victor.MyWorld;
 public class GameThread extends Thread {
     private static final long FPS = (long)(1000.0 / 30.0);
     private SurfaceHolder surfaceHolder; // for manipulating canvas
-    private MyWorld world;
+    private World world;
     private boolean threadIsRunning = true; // running by default
 
-    public GameThread(SurfaceHolder holder, MyWorld world) {
+    public GameThread(SurfaceHolder holder, World world) {
         surfaceHolder = holder;
         setName("GameThread");
         this.world = world;

@@ -3,9 +3,10 @@ package cornelius.tessa.victor;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.deitel.cannongame.R;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -58,51 +59,21 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
         highScores = new ArrayList<>();
         shots = 0;
         enemyShots = 0;
+
+        // Sound initialization
+        MediaPlayer mediaPlayer = MediaPlayer.create(this.context, R.raw.game_music);
+        mediaPlayer.setOnCompletionListener(this);
+        mediaPlayer.start(); // no need to call prepare() here because create() does that for you
+
+        // Enivronment initialization
         stage = 0;
-
-        // Sound initialization
-        //MediaPlayer mediaPlayer = MediaPlayer.create(this.context, R.raw.game_music);
-        //mediaPlayer.setOnCompletionListener(this);
-        //mediaPlayer.start(); // no need to call prepare() here because create() does that for you
-
-        // Enivronment initialization
         ship = new MyShip(this);
         ship.position.X = 128;
         ship.position.Y += 765 / 2;
         mLastTouchY = ship.position.Y;
         this.addObject(ship);
         retrieveHighScores();
-        spawnEnemy();
-    }
 
-    public MyWorld(StateListener listener, SoundManager sounds, Context context, int stage)
-    {
-        super(listener, sounds);
-        this.context = context;
-        sharedPref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        editor = sharedPref.edit();
-        highScores = new ArrayList<>();
-        shots = 0;
-        enemyShots = 0;
-        this.stage = stage;
-
-        // Sound initialization
-        //MediaPlayer mediaPlayer = MediaPlayer.create(this.context, R.raw.game_music);
-        //mediaPlayer.setOnCompletionListener(this);
-        //mediaPlayer.start(); // no need to call prepare() here because create() does that for you
-
-        // Enivronment initialization
-        ship = new MyShip(this);
-        ship.position.X = 128;
-        ship.position.Y += 765 / 2;
-        mLastTouchY = ship.position.Y;
-        this.addObject(ship);
-        retrieveHighScores();
-        spawnEnemy();
-    }
-
-    public void spawnEnemy()
-    {
         // Populates the screen with ten enemies in random positions on a separate thread
         // Enemies spawn 300px from the left edge of the screen
         // TODO: change spawn location based off of right edge of player ship
@@ -111,163 +82,165 @@ public class MyWorld extends World implements MediaPlayer.OnCompletionListener
             public void run()
             {
                 ArrayList<Enemy> enemies = new ArrayList<>();
-                while(!ship.isDead())
+                while(true)
                 {
-                    synchronized (MyWorld.this)
+                    if (stage == 1)
                     {
-                        //Log.i("LEVEL", "This is level 0");
-                        if (stage == 1)
+                        while (numKills <= 10)
                         {
-                            Log.i("LEVEL", "This is level 1");
-                            while (numKills <= 10)
+                            switch (rand.nextInt(3))
                             {
-                                switch (rand.nextInt(3))
-                                {
-                                    case 0:
-                                        enemy = new EnemyBlue(MyWorld.this);
-                                        break;
-                                    case 1:
-                                        enemy = new EnemyBlack(MyWorld.this);
-                                        break;
-                                    default:
-                                        enemy = new EnemyYellow(MyWorld.this);
-                                }
+                                case 0:
+                                    enemy = new EnemyBlue(MyWorld.this);
+                                    break;
+                                case 1:
+                                    enemy = new EnemyBlack(MyWorld.this);
+                                    break;
+                                default:
+                                    enemy = new EnemyYellow(MyWorld.this);
+                            }
 
+                            enemy.position.X = width * rand.nextFloat();
+                            while (enemy.position.X < 500)
                                 enemy.position.X = width * rand.nextFloat();
-                                while (enemy.position.X < 500)
-                                    enemy.position.X = width * rand.nextFloat();
-                                enemy.position.Y = height * rand.nextFloat();
-                                enemies.add((Enemy) enemy);
-                                addObject(enemy);
-                                try
-                                {
-                                    Thread.sleep(rand.nextInt(1000) + 300);
-                                } catch (InterruptedException e)
-                                {
-                                    e.printStackTrace();
-                                }
+                            enemy.position.Y = height * rand.nextFloat();
+                            enemies.add((Enemy) enemy);
+                            addObject(enemy);
+                            try
+                            {
+                                Thread.sleep(rand.nextInt(1000) + 300);
+                            } catch (InterruptedException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                        for (Enemy e : enemies)
+                            synchronized (e)
+                            {
+                                e.kill();
+                            }
+                        enemies.clear();
+                        synchronized (this)
+                        {
+                            numKills = 0;
+                        }
+                        stage++;
+                    } else if (stage == 2)
+                    {
+                        while (numKills <= 10)
+                        {
+                            switch (rand.nextInt(3))
+                            {
+                                case 0:
+                                    enemy = new EnemyBlue(MyWorld.this);
+                                    break;
+                                case 1:
+                                    enemy = new EnemyBlack(MyWorld.this);
+                                    break;
+                                default:
+                                    enemy = new EnemyYellow(MyWorld.this);
+                            }
+
+                            enemy.position.X = width * rand.nextFloat();
+                            while (enemy.position.X < 500)
+                                enemy.position.X = width * rand.nextFloat();
+                            enemy.position.Y = height * rand.nextFloat();
+                            enemies.add((Enemy) enemy);
+                            addObject(enemy);
+                            try
+                            {
+                                Thread.sleep(rand.nextInt(1700) + 300);
+                            } catch (InterruptedException e)
+                            {
+                                e.printStackTrace();
                             }
                             for (Enemy e : enemies)
-                                synchronized (e)
-                                {
-                                    e.kill();
-                                }
-                            enemies.clear();
-                            synchronized (this)
                             {
-                                numKills = 0;
+                                float x = rand.nextFloat();
+                                float y = rand.nextFloat();
+                                if(rand.nextBoolean()) x*=-1;
+                                if(rand.nextBoolean()) y*=-1;
+                                Point3F vel = new Point3F(x, y, 0);
+                                e.baseVelocity = vel;
+                                e.speed = 300;
+                                e.updateVelocity();
+                                if(enemyShots <= MAX_SHOTS)
+                                {
+                                    EnemyLaser enemyLaser = new EnemyLaser(world);
+                                    enemyLaser.position.Y = e.position.Y;
+                                    enemyLaser.position.X = e.position.X;
+                                    addObject(enemyLaser);
+                                    enemyLaser.fire();
+                                }
                             }
-                            stage++;
-                        } else if (stage == 2)
+                        }
+                        for (Enemy e : enemies)
+                            synchronized (e)
+                            {
+                                e.kill();
+                            }
+                        enemies.clear();
+                        synchronized (this)
                         {
-                            while (numKills <= 10)
-                            {
-                                switch (rand.nextInt(3))
-                                {
-                                    case 0:
-                                        enemy = new EnemyBlue(MyWorld.this);
-                                        break;
-                                    case 1:
-                                        enemy = new EnemyBlack(MyWorld.this);
-                                        break;
-                                    default:
-                                        enemy = new EnemyYellow(MyWorld.this);
-                                }
-
-                                enemy.position.X = width * rand.nextFloat();
-                                while (enemy.position.X < 500)
-                                    enemy.position.X = width * rand.nextFloat();
-                                enemy.position.Y = height * rand.nextFloat();
-                                enemies.add((Enemy) enemy);
-                                addObject(enemy);
-                                try
-                                {
-                                    Thread.sleep(rand.nextInt(1700) + 300);
-                                } catch (InterruptedException e)
-                                {
-                                    e.printStackTrace();
-                                }
-                                for (Enemy e : enemies)
-                                {
-                                    float x = rand.nextFloat();
-                                    float y = rand.nextFloat();
-                                    if (rand.nextBoolean()) x *= -1;
-                                    if (rand.nextBoolean()) y *= -1;
-                                    Point3F vel = new Point3F(x, y, 0);
-                                    e.baseVelocity = vel;
-                                    e.speed = 300;
-                                    e.updateVelocity();
-                                    if (enemyShots <= MAX_SHOTS)
-                                    {
-                                        EnemyLaser enemyLaser = new EnemyLaser(world);
-                                        enemyLaser.position.Y = e.position.Y;
-                                        enemyLaser.position.X = e.position.X;
-                                        addObject(enemyLaser);
-                                        enemyLaser.fire();
-                                    }
-                                }
-                            }
-                            for (Enemy e : enemies)
-                                synchronized (e)
-                                {
-                                    e.kill();
-                                }
-                            enemies.clear();
-                            synchronized (this)
-                            {
-                                numKills = 0;
-                            }
-                            stage++;
-                        } else if (stage == 3)
+                            numKills = 0;
+                        }
+                        stage++;
+                    }
+                    else if (stage == 3)
+                    {
+                        while (!ship.isDead())
                         {
-                            while (!ship.isDead())
+                            switch (rand.nextInt(3))
                             {
-                                switch (rand.nextInt(3))
-                                {
-                                    case 0:
-                                        enemy = new EnemyBlue(MyWorld.this);
-                                        break;
-                                    case 1:
-                                        enemy = new EnemyBlack(MyWorld.this);
-                                        break;
-                                    default:
-                                        enemy = new EnemyYellow(MyWorld.this);
-                                }
+                                case 0:
+                                    enemy = new EnemyBlue(MyWorld.this);
+                                    break;
+                                case 1:
+                                    enemy = new EnemyBlack(MyWorld.this);
+                                    break;
+                                default:
+                                    enemy = new EnemyYellow(MyWorld.this);
+                            }
 
+                            enemy.position.X = width * rand.nextFloat();
+                            while (enemy.position.X < 500)
                                 enemy.position.X = width * rand.nextFloat();
-                                while (enemy.position.X < 500)
-                                    enemy.position.X = width * rand.nextFloat();
-                                enemy.position.Y = height * rand.nextFloat();
-                                enemies.add((Enemy) enemy);
-                                addObject(enemy);
-                                Point3F vel = new Point3F(-1f, 0, 0);
-                                enemy.baseVelocity = vel;
-                                enemy.speed = 500;
-                                enemy.updateVelocity();
-                                try
-                                {
-                                    Thread.sleep(rand.nextInt(1000) + 300);
-                                } catch (InterruptedException e)
-                                {
-                                    e.printStackTrace();
-                                }
-                            }
-                            for (Enemy e : enemies)
-                                synchronized (e)
-                                {
-                                    e.kill();
-                                }
-                            enemies.clear();
-                            synchronized (this)
+                            enemy.position.Y = height * rand.nextFloat();
+                            enemies.add((Enemy) enemy);
+                            addObject(enemy);
+                            Point3F vel = new Point3F(-1f, 0, 0);
+                            enemy.baseVelocity = vel;
+                            enemy.speed = 500;
+                            enemy.updateVelocity();
+                            try
                             {
-                                numKills = 0;
+                                Thread.sleep(rand.nextInt(1000) + 300);
+                            } catch (InterruptedException e)
+                            {
+                                e.printStackTrace();
                             }
+                        }
+                        for (Enemy e : enemies)
+                            synchronized (e)
+                            {
+                                e.kill();
+                            }
+                        enemies.clear();
+                        synchronized (this)
+                        {
+                            numKills = 0;
                         }
                     }
                 }
             }
         }).start();
     }
+
+    public void setStage(int stage)
+    {
+        this.stage = stage;
+    }
+
     @Override
     public boolean onTouch(View v, MotionEvent event)
     {
